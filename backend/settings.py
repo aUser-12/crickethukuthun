@@ -3,7 +3,7 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-sports-venue-review-app-secret-key-change-in-production'
+SECRET_KEY = 'Deadmaus-mommy-cfouroneeight-daddy-ineed50characters-rahhhhhhh'
 
 DEBUG = True
 
