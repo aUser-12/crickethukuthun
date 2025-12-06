@@ -1,0 +1,114 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "sportsfan",
+      "password_hash": "pbkdf2_sha256$1000000$ZraPhdLiqpigf2E0jh7Qnu$AyrblOnURKZv3OIbDjIEzz/+HtDBUl78+rdhHIzcRcU="
+    },
+    {
+      "id": 2,
+      "username": "gymrat",
+      "password_hash": "pbkdf2_sha256$1000000$ZraPhdLiqpigf2E0jh7Qnu$AyrblOnURKZv3OIbDjIEzz/+HtDBUl78+rdhHIzcRcU="
+    },
+    {
+      "id": 3,
+      "username": "Shaurya_pookie",
+      "password_hash": "pbkdf2_sha256$1000000$ZdcJ9ZOdupjUYJVWvSc9IV$C2p43fuEeWOq88z6ST+85w9ytDXBc6TxDMmo9M70QcU="
+    },
+    {
+      "id": 4,
+      "username": "meo",
+      "password_hash": "pbkdf2_sha256$1000000$63p9JhzcP5yyZgK8iVG6ag$ZRYbxjEaTXa4KxGFLPXJiQWV61x/bo1J6IrYKkR8e1w="
+    }
+  ],
+  "venues": [
+    {
+      "id": 1,
+      "name": "Downtown Sports Arena",
+      "location": "123 Main Street, Downtown",
+      "description": "A state-of-the-art sports arena featuring basketball courts, volleyball nets, and indoor soccer fields. Perfect for team sports and recreational activities."
+    },
+    {
+      "id": 2,
+      "name": "Riverside Tennis Club",
+      "location": "456 River Road, Westside",
+      "description": "Premium tennis facility with 8 outdoor courts and 4 indoor courts. Offers lessons for all skill levels and hosts regular tournaments."
+    },
+    {
+      "id": 3,
+      "name": "Mountain View Golf Course",
+      "location": "789 Highland Drive, North Hills",
+      "description": "An 18-hole championship golf course with stunning mountain views. Features a pro shop, driving range, and clubhouse restaurant."
+    },
+    {
+      "id": 4,
+      "name": "Aquatic Sports Center",
+      "location": "321 Ocean Boulevard, Beachfront",
+      "description": "Olympic-sized swimming pool with diving boards, water polo facilities, and a separate kids pool. Open year-round with heated pools."
+    },
+    {
+      "id": 5,
+      "name": "City Fitness Stadium",
+      "location": "555 Athletic Way, Midtown",
+      "description": "Multi-purpose stadium with track and field facilities, gym equipment, and outdoor workout areas. Hosts marathons and community sports events."
+    }
+  ],
+  "reviews": [
+    {
+      "id": 1,
+      "user_id": 1,
+      "venue_id": 1,
+      "rating": 5,
+      "text": "Amazing facility! The basketball courts are top-notch and well-maintained. Great atmosphere for pickup games.",
+      "timestamp": "2025-01-15T10:30:00Z"
+    },
+    {
+      "id": 2,
+      "user_id": 2,
+      "venue_id": 1,
+      "rating": 4,
+      "text": "Great place for team sports. Sometimes gets crowded on weekends but overall excellent experience.",
+      "timestamp": "2025-01-16T14:20:00Z"
+    },
+    {
+      "id": 3,
+      "user_id": 1,
+      "venue_id": 2,
+      "rating": 5,
+      "text": "Best tennis courts in the city! The instructors are fantastic and very patient with beginners.",
+      "timestamp": "2025-01-17T09:15:00Z"
+    },
+    {
+      "id": 4,
+      "user_id": 2,
+      "venue_id": 3,
+      "rating": 4,
+      "text": "Beautiful golf course with amazing views. The clubhouse restaurant is also worth a visit!",
+      "timestamp": "2025-01-18T16:45:00Z"
+    },
+    {
+      "id": 5,
+      "user_id": 1,
+      "venue_id": 4,
+      "rating": 5,
+      "text": "Perfect pool for serious swimmers. Clean facilities and helpful lifeguards.",
+      "timestamp": "2025-01-19T11:00:00Z"
+    },
+    {
+      "id": 6,
+      "user_id": 1,
+      "venue_id": 4,
+      "rating": 4,
+      "text": "Pretty good, very inclusive, separate pools",
+      "timestamp": "2025-11-29T16:33:55.785077Z"
+    },
+    {
+      "id": 7,
+      "user_id": 3,
+      "venue_id": 1,
+      "rating": 3,
+      "text": "Nice infrastructure, but often crowded, might be uncomfortable for women",
+      "timestamp": "2025-11-29T18:30:55.142939Z"
+    }
+  ]
+}

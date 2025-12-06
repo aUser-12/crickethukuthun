@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Feed</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+    <style>
+       :root {
+            --bg-gradient-start: #C2DC80;
+            --bg-gradient-end: #EA9CAF;
+            --glass-color: rgba(255, 248, 250, 0.67);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --text-color: #FFF8FA;
+            --icon-stroke: #C8D1B1;
+            --header-std-height: 5vh;
+            --card-radius: 30px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            width: 100vw;
+            background: linear-gradient(249deg, #C2DC80 2.17%, #EA9CAF 97.83%);
+            font-family: 'Playfair Display', serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            overflow-y: auto;
+            overflow-x: hidden;
+            color: var(--text-color);
+            padding-top: 20px;
+            padding-bottom: 40px;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.4;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 90%;
+            min-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            gap: 3vh;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            flex-shrink: 0;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 4vw;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #FFF8FA;
+            font-size: 1.2rem;
+            opacity: 0.9;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+            transition: opacity 0.3s ease;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px; 
+            left: 0;
+            width: 0; 
+            height: 2px; 
+            background-color: #FFF8FA; 
+            transition: width 0.3s ease-out; 
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .search-container {
+            flex-grow: 1;
+            margin: 0 4vw;
+            position: relative;
+        }
+
+        .search-input {
+            height: 50px;
+            width: 100%;
+            padding: 0 60px;
+            border-radius: 50px;
+            border: none;
+            background: var(--glass-color);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            font-size: 1.1rem;
+            color: white;
+            outline: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-icon {
+            z-index: 100;
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 25px;
+            height: 25px;
+        }
+
+        .profile-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--glass-color);
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+        }
+
+        .page-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 2vh;
+        }
+
+        .page-title h1 {
+            font-size: 2.5rem;
+            font-weight: 400;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .location-pin-icon {
+            width: 40px;
+            height: 40px;
+            stroke: #FFF8FA;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .feed-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .review-card {
+            background: rgba(255, 248, 250, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            padding: 30px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .review-user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: rgba(100, 100, 100, 0.8);
+        }
+
+        .user-info h3 {
+            font-size: 1.2rem;
+            color: #FFF8FA;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+
+        .user-info h3:hover {
+            text-decoration: underline;
+        }
+
+        .venue-link {
+            font-size: 0.95rem;
+            color: rgba(100, 100, 100, 0.8);
+            cursor: pointer;
+        }
+
+        .venue-link:hover {
+            text-decoration: underline;
+        }
+
+        .review-rating {
+            display: flex;
+            gap: 3px;
+        }
+
+        .star {
+            width: 22px;
+            height: 22px;
+            fill: #D3D3D3;
+        }
+
+        .star.filled {
+            fill: #FFD700;
+        }
+
+        .review-text {
+            font-size: 1.1rem;
+            color: rgba(100, 100, 100, 0.9);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .review-timestamp {
+            font-size: 0.85rem;
+            color: rgba(100, 100, 100, 0.6);
+        }
+
+        .empty-feed {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(255, 248, 250, 0.6);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+        }
+
+        .empty-feed h2 {
+            font-size: 1.8rem;
+            color: #FFF8FA;
+            margin-bottom: 15px;
+        }
+
+        .empty-feed p {
+            font-size: 1.1rem;
+            color: rgba(100, 100, 100, 0.8);
+        }
+
+        .auth-section {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .auth-btn {
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: none;
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .login-btn {
+            background: transparent;
+            color: #FFF8FA;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .logout-btn {
+            background: transparent;
+            color: #FFF8FA;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+        }
+
+        .username-display {
+            color: #FFF8FA;
+        }
+
+        @media (max-width: 768px) {
+            .search-container {
+                display: none; 
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <nav class="nav-links">
+                <a href="/">Home</a>
+                <a href="/community">Community</a>
+                <a href="/login">Login</a>
+            </nav>
+
+            <div class="search-container">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="#FFF8FA">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M11 4C7.13401 4 4 7.13401 4 11C4 14.866 7.13401 18 11 18C14.866 18 18 14.866 18 11C18 7.13401 14.866 4 11 4ZM2 11C2 6.02944 6.02944 2 11 2C15.9706 2 20 6.02944 20 11C20 15.9706 15.9706 20 11 20C6.02944 20 2 15.9706 2 11Z"/>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M15.9428 15.9429C16.3333 15.5524 16.9665 15.5524 17.357 15.9429L21.707 20.2929C22.0975 20.6834 22.0975 21.3166 21.707 21.7071C21.3165 22.0976 20.6833 22.0976 20.2928 21.7071L15.9428 17.3571C15.5523 16.9666 15.5523 16.3334 15.9428 15.9429Z"/>
+                </svg>
+                <input type="text" class="search-input" placeholder="Search reviews...">
+            </div>
+
+            <div id="authSection" class="auth-section">
+                <a href="/login" class="auth-btn login-btn">Login</a>
+            </div>
+        </header>
+
+        <div class="page-title">
+            <svg class="location-pin-icon" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+            <h1>Community Feed</h1>
+        </div>
+
+        <div class="feed-container" id="feedContainer">
+            <div class="empty-feed">
+                <h2>Loading reviews...</h2>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentUser = null;
+
+        function getCsrfToken() {
+            const name = 'csrftoken';
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/me');
+                const data = await response.json();
+                currentUser = data.user;
+                updateAuthUI();
+            } catch (error) {
+                console.error('Auth check failed:', error);
+            }
+        }
+
+        function updateAuthUI() {
+            const authSection = document.getElementById('authSection');
+            if (currentUser) {
+                authSection.innerHTML = `
+                    <span class="username-display">Hello, ${currentUser.username}</span>
+                    <a href="/profile/${currentUser.id}" class="auth-btn login-btn">Profile</a>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                `;
+            } else {
+                authSection.innerHTML = `<a href="/login" class="auth-btn login-btn">Login</a>`;
+            }
+        }
+
+        async function logout() {
+            try {
+                await fetch('/api/logout', { 
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': getCsrfToken() }
+                });
+                currentUser = null;
+                updateAuthUI();
+            } catch (error) {
+                console.error('Logout failed:', error);
+            }
+        }
+
+        async function loadFeed() {
+            try {
+                const response = await fetch('/api/feed');
+                const data = await response.json();
+                displayFeed(data.reviews);
+            } catch (error) {
+                console.error('Failed to load feed:', error);
+                document.getElementById('feedContainer').innerHTML = `
+                    <div class="empty-feed">
+                        <h2>Failed to load reviews</h2>
+                        <p>Please try again later.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function displayFeed(reviews) {
+            const container = document.getElementById('feedContainer');
+            
+            if (!reviews || reviews.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-feed">
+                        <h2>No reviews yet</h2>
+                        <p>Be the first to review a sports venue!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = reviews.map(review => `
+                <div class="review-card">
+                    <div class="review-header">
+                        <div class="review-user">
+                            <div class="user-avatar">${review.username.charAt(0).toUpperCase()}</div>
+                            <div class="user-info">
+                                <h3 onclick="window.location.href='/profile/${review.user_id}'">${review.username}</h3>
+                                <span class="venue-link" onclick="window.location.href='/place/${review.venue_id}'">@ ${review.venue_name}</span>
+                            </div>
+                        </div>
+                        <div class="review-rating">
+                            ${renderStars(review.rating)}
+                        </div>
+                    </div>
+                    <p class="review-text">${review.text || 'No comment provided.'}</p>
+                    <span class="review-timestamp">${formatDate(review.timestamp)}</span>
+                </div>
+            `).join('');
+        }
+
+        function renderStars(rating) {
+            let stars = '';
+            for (let i = 1; i <= 5; i++) {
+                const filled = i <= rating ? 'filled' : '';
+                stars += `<svg class="star ${filled}" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
+            }
+            return stars;
+        }
+
+        function formatDate(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        checkAuth();
+        loadFeed();
+    </script>
+
+</body>
+</html>

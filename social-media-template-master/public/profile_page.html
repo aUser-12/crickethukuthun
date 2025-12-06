@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+<style>
+ :root {
+    --bg-gradient-start: #C2DC80;
+    --bg-gradient-end: #EA9CAF;
+    --glass-color: rgba(255, 248, 250, 0.60);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --text-color: #FFF8FA;
+    --card-radius: 30px;
+    --input-radius: 50px;
+    --sidebar-width: 300px;
+    --layout-gap: 4vw;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100vh;
+    width: 100vw;
+    background: linear-gradient(249deg, #C2DC80 2.17%, #EA9CAF 97.83%);
+    font-family: 'Playfair Display', serif;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    overflow-y: auto;
+    overflow-x: hidden;
+    color: var(--text-color);
+    padding-top: 20px;
+    padding-bottom: 40px;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+}
+
+.container {
+    position: relative;
+    z-index: 1;
+    width: 90%;
+    max-width: 1400px;
+    min-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    gap: 3vh;
+}
+
+header {
+    display: grid;
+    grid-template-columns: var(--sidebar-width) 1fr auto;
+    column-gap: var(--layout-gap);
+    align-items: center;
+    padding: 10px 0;
+    flex-shrink: 0; 
+}
+
+.nav-links {
+    grid-column: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #FFF8FA;
+    font-size: 1.2rem;
+    opacity: 0.9;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+    transition: opacity 0.3s ease;
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -5px; 
+    left: 0;
+    width: 0; 
+    height: 2px; 
+    background-color: #FFF8FA; 
+    transition: width 0.3s ease-out; 
+}
+
+.nav-links a:hover::after {
+    width: 100%;
+}
+
+.search-container {
+    grid-column: 2;
+    position: relative;
+    width: 100%;
+}
+
+.search-input {
+    height: 50px; 
+    width: 100%;
+    padding: 0 60px;
+    border-radius: 50px;
+    border: none;
+    background: var(--glass-color);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    font-size: 1.1rem;
+    color: white;
+    outline: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.search-icon {
+    z-index: 100;
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 25px;
+    height: 25px;
+}
+
+.profile-circle {
+    grid-column: 3;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--glass-color);
+    backdrop-filter: blur(5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.profile-grid {
+    flex-grow: 1;
+    display: grid;
+    grid-template-columns: var(--sidebar-width) 1fr; 
+    column-gap: var(--layout-gap);
+    margin-top: 0;
+}
+
+.profile-sidebar {
+    grid-column: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center; 
+    text-align: center;
+}
+
+.page-title {
+    font-size: 3rem;
+    font-weight: 400;
+    margin-bottom: 20px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    line-height: 1.1;
+    width: 100%;
+    text-align: center;
+}
+
+.avatar-large {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: rgba(255, 248, 250, 0.67);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 5rem;
+    color: rgba(100, 100, 100, 0.5);
+}
+
+.username-display {
+    font-size: 1.8rem;
+    color: #FFF8FA;
+    margin-bottom: 10px;
+}
+
+.meta-info {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.meta-item {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.logout-btn {
+    margin-top: 20px;
+    padding: 12px 30px;
+    border-radius: 50px;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    background: transparent;
+    color: #FFF8FA;
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.logout-btn:hover {
+    transform: translateY(-2px);
+}
+
+.profile-details {
+    grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    padding-top: 20px; 
+}
+
+.section-title {
+    font-size: 1.8rem;
+    color: #FFF8FA;
+    margin-bottom: 15px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.review-card {
+    background: var(--glass-color);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--card-radius);
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.venue-name {
+    font-size: 1.3rem;
+    color: #FFF8FA;
+    cursor: pointer;
+}
+
+.venue-name:hover {
+    text-decoration: underline;
+}
+
+.review-rating {
+    display: flex;
+    gap: 3px;
+}
+
+.star {
+    width: 22px;
+    height: 22px;
+    fill: #D3D3D3;
+}
+
+.star.filled {
+    fill: #FFD700;
+}
+
+.review-text {
+    font-size: 1.1rem;
+    color: rgba(100, 100, 100, 0.9);
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.review-timestamp {
+    font-size: 0.9rem;
+    color: rgba(100, 100, 100, 0.6);
+}
+
+.review-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.action-btn {
+    padding: 8px 20px;
+    border-radius: 20px;
+    border: none;
+    font-family: 'Playfair Display', serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.delete-btn {
+    background: rgba(255, 100, 100, 0.3);
+    color: #c00;
+}
+
+.no-reviews {
+    background: var(--glass-color);
+    backdrop-filter: blur(20px);
+    border-radius: var(--card-radius);
+    padding: 40px;
+    text-align: center;
+}
+
+.no-reviews h3 {
+    font-size: 1.4rem;
+    color: #FFF8FA;
+    margin-bottom: 10px;
+}
+
+.no-reviews p {
+    color: rgba(100, 100, 100, 0.8);
+}
+
+.not-found {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.not-found h2 {
+    font-size: 2rem;
+    margin-bottom: 15px;
+}
+
+@media (max-width: 900px) {
+    header {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .nav-links, .search-container, .profile-circle {
+        grid-column: auto;
+    }
+
+    .nav-links {
+        width: 100%;
+        justify-content: space-around;
+    }
+
+    .profile-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+    
+    .profile-sidebar, .profile-details {
+        grid-column: auto;
+    }
+    
+    .profile-sidebar {
+        align-items: center;
+        text-align: center;
+    }
+}
+</style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <nav class="nav-links">
+                <a href="/">Home</a>
+                <a href="/community">Community</a>
+                <a href="/login">Login</a>
+            </nav>
+
+            <div class="search-container">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="#FFF8FA">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M11 4C7.13401 4 4 7.13401 4 11C4 14.866 7.13401 18 11 18C14.866 18 18 14.866 18 11C18 7.13401 14.866 4 11 4ZM2 11C2 6.02944 6.02944 2 11 2C15.9706 2 20 6.02944 20 11C20 15.9706 15.9706 20 11 20C6.02944 20 2 15.9706 2 11Z"/>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M15.9428 15.9429C16.3333 15.5524 16.9665 15.5524 17.357 15.9429L21.707 20.2929C22.0975 20.6834 22.0975 21.3166 21.707 21.7071C21.3165 22.0976 20.6833 22.0976 20.2928 21.7071L15.9428 17.3571C15.5523 16.9666 15.5523 16.3334 15.9428 15.9429Z"/>
+                </svg>
+                <input type="text" class="search-input">
+            </div>
+
+            <div class="profile-circle"></div>
+        </header>
+
+        <main class="profile-grid" id="profileContent">
+            
+            <section class="profile-sidebar">
+                <h1 class="page-title" id="pageTitle">Loading...</h1>
+                
+                <div class="avatar-large" id="userAvatar"></div>
+                
+                <div class="username-display" id="usernameDisplay"></div>
+
+                <div class="meta-info">
+                    <div class="meta-item" id="reviewCountMeta">Reviews: 0</div>
+                </div>
+
+                <button class="logout-btn" id="logoutBtn" style="display: none;" onclick="logout()">Logout</button>
+            </section>
+
+            <section class="profile-details">
+                <h2 class="section-title">Reviews</h2>
+                <div class="reviews-list" id="reviewsList">
+                    <div class="no-reviews">
+                        <h3>Loading reviews...</h3>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let profileUserId = null;
+
+        function getCsrfToken() {
+            const name = 'csrftoken';
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function getUserIdFromUrl() {
+            const path = window.location.pathname;
+            const match = path.match(/\/profile\/(\d+)/);
+            return match ? parseInt(match[1]) : null;
+        }
+
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/me');
+                const data = await response.json();
+                currentUser = data.user;
+                updateLogoutButton();
+            } catch (error) {
+                console.error('Auth check failed:', error);
+            }
+        }
+
+        function updateLogoutButton() {
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (currentUser && currentUser.id === profileUserId) {
+                logoutBtn.style.display = 'block';
+            }
+        }
+
+        async function logout() {
+            try {
+                await fetch('/api/logout', { 
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': getCsrfToken() }
+                });
+                window.location.href = '/';
+            } catch (error) {
+                console.error('Logout failed:', error);
+            }
+        }
+
+        async function loadProfile() {
+            profileUserId = getUserIdFromUrl();
+            if (!profileUserId) {
+                showNotFound();
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/user/${profileUserId}`);
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    showNotFound();
+                    return;
+                }
+
+                displayProfile(data);
+                updateLogoutButton();
+            } catch (error) {
+                console.error('Failed to load profile:', error);
+                showNotFound();
+            }
+        }
+
+        function showNotFound() {
+            document.getElementById('profileContent').innerHTML = `
+                <div class="not-found">
+                    <h2>User not found</h2>
+                    <p>The user profile you're looking for doesn't exist.</p>
+                    <a href="/" style="color: #FFF8FA; margin-top: 20px; display: inline-block;">Go Home</a>
+                </div>
+            `;
+        }
+
+        function displayProfile(data) {
+            const user = data.user;
+            const reviews = data.reviews;
+
+            document.getElementById('pageTitle').textContent = user.username + "'s Profile";
+            document.getElementById('userAvatar').textContent = user.username.charAt(0).toUpperCase();
+            document.getElementById('usernameDisplay').textContent = user.username;
+            document.getElementById('reviewCountMeta').textContent = `Reviews: ${reviews.length}`;
+            
+            document.title = user.username + "'s Profile - Sports Venue Reviews";
+
+            displayReviews(reviews);
+        }
+
+        function displayReviews(reviews) {
+            const container = document.getElementById('reviewsList');
+            
+            if (!reviews || reviews.length === 0) {
+                container.innerHTML = `
+                    <div class="no-reviews">
+                        <h3>No reviews yet</h3>
+                        <p>This user hasn't written any reviews.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = reviews.map(review => `
+                <div class="review-card">
+                    <div class="review-header">
+                        <span class="venue-name" onclick="window.location.href='/place/${review.venue_id}'">${review.venue_name}</span>
+                        <div class="review-rating">
+                            ${renderStars(review.rating)}
+                        </div>
+                    </div>
+                    <p class="review-text">${review.text || 'No comment provided.'}</p>
+                    <span class="review-timestamp">${formatDate(review.timestamp)}</span>
+                    ${currentUser && currentUser.id === review.user_id ? `
+                        <div class="review-actions">
+                            <button class="action-btn delete-btn" onclick="deleteReview(${review.id})">Delete</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function renderStars(rating) {
+            let stars = '';
+            for (let i = 1; i <= 5; i++) {
+                const filled = i <= rating ? 'filled' : '';
+                stars += `<svg class="star ${filled}" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
+            }
+            return stars;
+        }
+
+        function formatDate(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        async function deleteReview(reviewId) {
+            if (!confirm('Are you sure you want to delete this review?')) return;
+
+            try {
+                const response = await fetch(`/api/reviews/${reviewId}/delete`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    loadProfile();
+                } else {
+                    const data = await response.json();
+                    alert(data.error || 'Failed to delete review');
+                }
+            } catch (error) {
+                alert('An error occurred. Please try again.');
+            }
+        }
+
+        checkAuth();
+        loadProfile();
+    </script>
+
+</body>
+</html>

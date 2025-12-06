@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sports Venue Reviews</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-gradient-start: #C2DC80;
+            --bg-gradient-end: #EA9CAF;
+            --glass-color: rgba(255, 248, 250, 0.67);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --text-color: #FFF8FA;
+            --icon-stroke: #C8D1B1;
+            --header-std-height: 5vh;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            width: 100vw;
+            min-height: 100vh;
+            background: linear-gradient(249deg, #C2DC80 2.17%, #EA9CAF 97.83%);
+            font-family: 'Playfair Display', serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            overflow-x: hidden;
+            overflow-y: auto;
+            position: relative;
+            padding: 20px 0 40px;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.4;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 90%;
+            min-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            gap: 3vh;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            flex-shrink: 0;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 4vw;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #FFF8FA;
+            font-size: 1.2rem;
+            opacity: 0.9;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+            transition: opacity 0.3s ease;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #FFF8FA;
+            transition: width 0.3s ease-out;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .search-container {
+            flex-grow: 1;
+            margin: 0 4vw;
+            position: relative;
+        }
+
+        .search-input {
+            height: var(--header-std-height);
+            width: 100%;
+            padding: 0 60px;
+            border-radius: 50px;
+            border: none;
+            background: var(--glass-color);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            font-size: 1.1rem;
+            color: white;
+            outline: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-icon {
+            z-index: 100;
+            position: absolute;
+            left: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: calc(var(--header-std-height) - 1vh);
+            height: calc(var(--header-std-height) - 2vh);
+            fill: #FFF8FA;
+            opacity: 0.4;
+        }
+
+        .profile-circle {
+            width: var(--header-std-height);
+            height: var(--header-std-height);
+            border-radius: 50%;
+            background: var(--glass-color);
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            color: rgba(100, 100, 100, 0.8);
+        }
+
+        .main-card {
+            flex-grow: 0;
+            width: 100%;
+            background: rgba(255, 248, 250, 0.6);
+            border-radius: 40px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            padding: 40px 60px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+        }
+
+        .trending {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .trending-text {
+            color: #FFF8FA;
+            font-size: 2rem;
+            font-weight: 400;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            line-height: 1.2;
+            margin: 0px;
+        }
+
+        .arrow-btn {
+            width: 70px;
+            height: 70px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+            padding: 0;
+        }
+
+        .arrow-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .arrow-icon {
+            width: 40px;
+            height: 40px;
+        }
+
+        .venues-section {
+            margin-top: 20px;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: #FFF8FA;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .venues-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .venue-card {
+            background: rgba(255, 248, 250, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            padding: 25px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .venue-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .venue-name {
+            font-size: 1.4rem;
+            color: #FFF8FA;
+            margin-bottom: 10px;
+        }
+
+        .venue-location {
+            font-size: 1rem;
+            color: rgba(100, 100, 100, 0.8);
+            margin-bottom: 15px;
+        }
+
+        .venue-rating {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stars {
+            display: flex;
+            gap: 3px;
+        }
+
+        .star {
+            width: 20px;
+            height: 20px;
+            fill: #D3D3D3;
+        }
+
+        .star.filled {
+            fill: #FFD700;
+        }
+
+        .review-count {
+            font-size: 0.9rem;
+            color: rgba(100, 100, 100, 0.7);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .auth-btn {
+            padding: 10px 25px;
+            border-radius: 50px;
+            border: none;
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .login-btn {
+            background: transparent;
+            color: #FFF8FA;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .signup-btn {
+            background: #FFF8FA;
+            color: #EA9CAF;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .username-display {
+            color: #FFF8FA;
+            font-size: 1rem;
+        }
+
+        .logout-btn {
+            padding: 8px 20px;
+            border-radius: 50px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            background: transparent;
+            color: #FFF8FA;
+            font-family: 'Playfair Display', serif;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .search-container {
+                width: 100%;
+                margin: 0;
+            }
+
+            .nav-links {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .trending-text {
+                font-size: 1.5rem;
+            }
+
+            .arrow-btn {
+                width: 50px;
+                height: 50px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <nav class="nav-links">
+                <a href="/">Home</a>
+                <a href="/community">Community</a>
+                <a href="/login">Login</a>
+            </nav>
+
+            <div class="search-container">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="#FFF8FA">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M11 4C7.13401 4 4 7.13401 4 11C4 14.866 7.13401 18 11 18C14.866 18 18 14.866 18 11C18 7.13401 14.866 4 11 4ZM2 11C2 6.02944 6.02944 2 11 2C15.9706 2 20 6.02944 20 11C20 15.9706 15.9706 20 11 20C6.02944 20 2 15.9706 2 11Z"/>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M15.9428 15.9429C16.3333 15.5524 16.9665 15.5524 17.357 15.9429L21.707 20.2929C22.0975 20.6834 22.0975 21.3166 21.707 21.7071C21.3165 22.0976 20.6833 22.0976 20.2928 21.7071L15.9428 17.3571C15.5523 16.9666 15.5523 16.3334 15.9428 15.9429Z"/>
+                </svg>
+                <input type="text" class="search-input" id="searchInput" placeholder="Search venues...">
+            </div>
+
+            <div id="authSection" class="auth-buttons">
+                <a href="/login" class="auth-btn login-btn">Login</a>
+                <a href="/login" class="auth-btn signup-btn">Sign Up</a>
+            </div>
+        </header>
+
+        <main class="main-card">
+            <div class="trending">
+                <h1 class="trending-text">Discover Sports Venues in Your Area</h1>
+
+                <button class="arrow-btn" onclick="window.location.href='/community'">
+                    <svg class="arrow-icon" viewBox="0 0 119 119" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M0 60H117M117 60L58.5 1.5M117 60L58.5 118.5" stroke="#C8D1B1" stroke-width="12"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </div>
+        </main>
+
+        <section class="venues-section">
+            <h2 class="section-title">Popular Venues</h2>
+            <div class="venues-grid" id="venuesGrid"></div>
+        </section>
+    </div>
+
+    <script>
+        let currentUser = null;
+
+        function getCsrfToken() {
+            const name = 'csrftoken';
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/me');
+                const data = await response.json();
+                currentUser = data.user;
+                updateAuthUI();
+            } catch (error) {
+                console.error('Auth check failed:', error);
+            }
+        }
+
+        function updateAuthUI() {
+            const authSection = document.getElementById('authSection');
+            if (currentUser) {
+                authSection.innerHTML = `
+                    <div class="user-info">
+                        <span class="username-display">Hello, ${currentUser.username}</span>
+                        <a href="/profile/${currentUser.id}" class="auth-btn login-btn">Profile</a>
+                        <button class="logout-btn" onclick="logout()">Logout</button>
+                    </div>
+                `;
+            } else {
+                authSection.innerHTML = `
+                    <a href="/login" class="auth-btn login-btn">Login</a>
+                    <a href="/login" class="auth-btn signup-btn">Sign Up</a>
+                `;
+            }
+        }
+
+        async function logout() {
+            try {
+                await fetch('/api/logout', { 
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': getCsrfToken() }
+                });
+                currentUser = null;
+                updateAuthUI();
+            } catch (error) {
+                console.error('Logout failed:', error);
+            }
+        }
+
+        async function loadVenues() {
+            try {
+                const response = await fetch('/api/venues');
+                const data = await response.json();
+                displayVenues(data.venues);
+            } catch (error) {
+                console.error('Failed to load venues:', error);
+            }
+        }
+
+        function displayVenues(venues) {
+            const grid = document.getElementById('venuesGrid');
+            grid.innerHTML = venues.map(venue => `
+                <div class="venue-card" onclick="window.location.href='/place/${venue.id}'">
+                    <h3 class="venue-name">${venue.name}</h3>
+                    <p class="venue-location">${venue.location}</p>
+                    <div class="venue-rating">
+                        <div class="stars">
+                            ${renderStars(venue.avg_rating)}
+                        </div>
+                        <span class="review-count">(${venue.review_count} reviews)</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderStars(rating) {
+            let stars = '';
+            for (let i = 1; i <= 5; i++) {
+                const filled = i <= Math.round(rating) ? 'filled' : '';
+                stars += `<svg class="star ${filled}" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
+            }
+            return stars;
+        }
+
+        document.getElementById('searchInput').addEventListener('input', async function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            try {
+                const response = await fetch('/api/venues');
+                const data = await response.json();
+                const filtered = data.venues.filter(v => 
+                    v.name.toLowerCase().includes(searchTerm) || 
+                    v.location.toLowerCase().includes(searchTerm)
+                );
+                displayVenues(filtered);
+            } catch (error) {
+                console.error('Search failed:', error);
+            }
+        });
+
+        checkAuth();
+        loadVenues();
+    </script>
+</body>
+
+</html>

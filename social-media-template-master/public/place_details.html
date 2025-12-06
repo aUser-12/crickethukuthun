@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Place Details</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+<style>
+ :root {
+    --bg-gradient-start: #C2DC80;
+    --bg-gradient-end: #EA9CAF;
+    --glass-color: rgba(255, 248, 250, 0.67);
+    --glass-border: rgba(255, 255, 255, 0.4);
+    --text-color: #FFF8FA;
+    --text-muted: #EAEAEA;
+    --icon-stroke: #C8D1B1;
+    --header-std-height: 5vh;
+    --card-radius: 30px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100vh;
+    width: 100vw;
+    background: linear-gradient(249deg, #C2DC80 2.17%, #EA9CAF 97.83%);
+    font-family: 'Playfair Display', serif;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    overflow-y: auto;
+    overflow-x: hidden;
+    color: var(--text-color);
+    padding-top: 20px;
+    padding-bottom: 40px;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+}
+
+.container {
+    position: relative;
+    z-index: 1;
+    width: 90%;
+    min-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    gap: 3vh;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+}
+
+.nav-links {
+    display: flex;
+    gap: 4vw;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #FFF8FA;
+    font-size: 1.2rem;
+}
+
+.search-container {
+    flex-grow: 1;
+    margin: 0 4vw;
+    position: relative;
+}
+
+.search-input {
+    height: 50px;
+    width: 100%;
+    padding: 0 60px;
+    border-radius: 50px;
+    border: none;
+    background: var(--glass-color);
+    backdrop-filter: blur(10px);
+    font-size: 1.1rem;
+    color: white;
+    outline: none;
+}
+
+.search-icon {
+    z-index: 100;
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 25px;
+    height: 25px;
+}
+
+.profile-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--glass-color);
+    cursor: pointer;
+}
+
+.page-title-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.page-title {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.page-title h1 {
+    font-size: 2.5rem;
+}
+
+.location-pin-icon {
+    width: 40px;
+    height: 40px;
+    stroke: #FFF8FA;
+    fill: none;
+    stroke-width: 2;
+}
+
+.write-review {
+    width: 45%;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.write-review .label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.write-review label {
+    font-size: 1.3rem;
+    color: #FFF8FA;
+    opacity: 0.9;
+}
+
+.star-rating {
+    display: flex;
+    gap: 5px;
+}
+
+.star-rating .star-btn {
+    width: 30px;
+    height: 30px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.star-rating .star-btn svg {
+    width: 100%;
+    height: 100%;
+    fill: #D3D3D3;
+    transition: fill 0.2s;
+}
+
+.star-rating .star-btn.active svg,
+.star-rating .star-btn:hover svg {
+    fill: #FFD700;
+}
+
+.write-review textarea {
+    width: 100%;
+    height: 110px;
+    padding: 15px;
+    border-radius: var(--card-radius);
+    border: none;
+    background: rgba(255, 248, 250, 0.6);
+    backdrop-filter: blur(12px);
+    font-family: 'Playfair Display', serif;
+    color: #333;
+    resize: none;
+    outline: none;
+}
+
+.submit-review-btn {
+    padding: 12px 30px;
+    border-radius: 50px;
+    border: none;
+    background: #FFF8FA;
+    color: #EA9CAF;
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s;
+    align-self: flex-end;
+}
+
+.submit-review-btn:hover {
+    transform: translateY(-2px);
+}
+
+.submit-review-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.login-prompt {
+    background: rgba(255, 248, 250, 0.6);
+    backdrop-filter: blur(12px);
+    padding: 20px;
+    border-radius: var(--card-radius);
+    text-align: center;
+}
+
+.login-prompt a {
+    color: #EA9CAF;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.details-grid {
+    flex-grow: 1;
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 2vw;
+}
+
+.glass-card {
+    background: rgba(255, 248, 250, 0.6);
+    backdrop-filter: blur(20px);
+    border-radius: var(--card-radius);
+    padding: 30px;
+}
+
+.section-label {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+}
+
+.col-left {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.overview-card {
+    min-height: 150px;
+}
+
+.overview-text {
+    font-size: 1.1rem;
+    color: rgba(100, 100, 100, 0.8);
+    line-height: 1.6;
+}
+
+.col-right {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.ratings-card {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.rating-display {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.rating-number {
+    font-size: 2.5rem;
+    color: #FFF8FA;
+}
+
+.stars-display {
+    display: flex;
+    gap: 5px;
+}
+
+.star {
+    width: 35px;
+    height: 35px;
+    fill: #D3D3D3;
+}
+
+.star.filled {
+    fill: #FFD700;
+}
+
+.review-count-text {
+    font-size: 1rem;
+    color: rgba(100, 100, 100, 0.7);
+}
+
+.reviews-card {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-height: 200px;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.review-item {
+    background: rgba(255, 255, 255, 0.3);
+    padding: 20px;
+    border-radius: 20px;
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.review-user {
+    font-weight: 600;
+    color: #FFF8FA;
+    cursor: pointer;
+}
+
+.review-user:hover {
+    text-decoration: underline;
+}
+
+.review-stars {
+    display: flex;
+    gap: 3px;
+}
+
+.review-stars .star {
+    width: 18px;
+    height: 18px;
+}
+
+.review-text {
+    font-size: 1rem;
+    color: rgba(100, 100, 100, 0.9);
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.review-timestamp {
+    font-size: 0.85rem;
+    color: rgba(100, 100, 100, 0.6);
+}
+
+.review-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.review-action-btn {
+    padding: 5px 15px;
+    border-radius: 20px;
+    border: none;
+    font-family: 'Playfair Display', serif;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.edit-btn {
+    background: rgba(255, 255, 255, 0.5);
+    color: #666;
+}
+
+.delete-btn {
+    background: rgba(255, 100, 100, 0.3);
+    color: #c00;
+}
+
+.no-reviews {
+    text-align: center;
+    color: rgba(100, 100, 100, 0.7);
+    padding: 30px;
+}
+
+.message {
+    padding: 12px 20px;
+    border-radius: 15px;
+    margin-bottom: 15px;
+    font-size: 0.95rem;
+}
+
+.success-message {
+    background: rgba(100, 200, 100, 0.2);
+    color: #080;
+}
+
+.error-message {
+    background: rgba(255, 100, 100, 0.2);
+    color: #c00;
+}
+
+@media (max-width: 900px) {
+    .details-grid {
+        grid-template-columns: 1fr;
+    }
+    .page-title-row {
+        flex-direction: column;
+    }
+    .write-review {
+        width: 100%;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <header>
+        <nav class="nav-links">
+            <a href="/">Home</a>
+            <a href="/community">Community</a>
+            <a href="/login">Login</a>
+        </nav>
+
+        <div class="search-container">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="#FFF8FA">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M11 4C7.13401 4 4 7.13401 4 11C4 14.866 7.13401 18 11 18C14.866 18 18 14.866 18 11C18 7.13401 14.866 4 11 4ZM2 11C2 6.02944 6.02944 2 11 2C15.9706 2 20 6.02944 20 11C20 15.9706 15.9706 20 11 20C6.02944 20 2 15.9706 2 11Z"/>
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M15.9428 15.9429C16.3333 15.5524 16.9665 15.5524 17.357 15.9429L21.707 20.2929C22.0975 20.6834 22.0975 21.3166 21.707 21.7071C21.3165 22.0976 20.6833 22.0976 20.2928 21.7071L15.9428 17.3571C15.5523 16.9666 15.5523 16.3334 15.9428 15.9429Z"/>
+            </svg>
+            <input type="text" class="search-input">
+        </div>
+
+        <div class="profile-circle" id="profileCircle"></div>
+    </header>
+
+    <div class="page-title-row">
+
+        <div class="page-title">
+            <svg class="location-pin-icon" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+            <h1 id="venueName">Loading...</h1>
+        </div>
+
+        <div class="write-review glass-card" id="writeReviewSection">
+            <div id="reviewMessage"></div>
+            <div class="label-row">
+                <label>Write Review</label>
+                <div class="star-rating" id="starRating">
+                    <button class="star-btn" data-rating="1"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                    <button class="star-btn" data-rating="2"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                    <button class="star-btn" data-rating="3"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                    <button class="star-btn" data-rating="4"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                    <button class="star-btn" data-rating="5"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                </div>
+            </div>
+            <textarea id="reviewText" placeholder="Write your review here..."></textarea>
+            <button class="submit-review-btn" id="submitReviewBtn" onclick="submitReview()">Submit Review</button>
+        </div>
+
+    </div>
+
+    <main class="details-grid">
+        
+        <div class="col-left">
+
+            <div>
+                <span class="section-label">Overview:</span>
+                <div class="glass-card overview-card">
+                    <div class="overview-text" id="venueDescription">Loading venue details...</div>
+                </div>
+            </div>
+
+            <div>
+                <span class="section-label">Location:</span>
+                <div class="glass-card location-card">
+                    <div class="overview-text" id="venueLocation">Loading...</div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-right">
+
+            <div>
+                <span class="section-label">Ratings:</span>
+                <div class="glass-card ratings-card">
+                    <div class="rating-display">
+                        <span class="rating-number" id="avgRating">-</span>
+                        <div class="stars-display" id="avgStars"></div>
+                    </div>
+                    <span class="review-count-text" id="reviewCount">0 reviews</span>
+                </div>
+            </div>
+
+            <div>
+                <span class="section-label">Reviews:</span>
+                <div class="glass-card reviews-card" id="reviewsContainer">
+                    <div class="no-reviews">Loading reviews...</div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+<script>
+    let currentUser = null;
+    let venueId = null;
+    let selectedRating = 0;
+
+    function getCsrfToken() {
+        const name = 'csrftoken';
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function getVenueIdFromUrl() {
+        const path = window.location.pathname;
+        const match = path.match(/\/place\/(\d+)/);
+        return match ? parseInt(match[1]) : null;
+    }
+
+    async function checkAuth() {
+        try {
+            const response = await fetch('/api/me');
+            const data = await response.json();
+            currentUser = data.user;
+            updateWriteReviewSection();
+        } catch (error) {
+            console.error('Auth check failed:', error);
+        }
+    }
+
+    function updateWriteReviewSection() {
+        const section = document.getElementById('writeReviewSection');
+        if (!currentUser) {
+            section.innerHTML = `
+                <div class="login-prompt">
+                    <p><a href="/login">Login</a> to write a review</p>
+                </div>
+            `;
+        }
+    }
+
+    async function loadVenue() {
+        venueId = getVenueIdFromUrl();
+        if (!venueId) {
+            document.getElementById('venueName').textContent = 'Venue not found';
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/venues/${venueId}`);
+            const data = await response.json();
+            
+            if (!response.ok) {
+                document.getElementById('venueName').textContent = 'Venue not found';
+                return;
+            }
+
+            const venue = data.venue;
+            document.getElementById('venueName').textContent = venue.name;
+            document.getElementById('venueDescription').textContent = venue.description;
+            document.getElementById('venueLocation').textContent = venue.location;
+            document.getElementById('avgRating').textContent = venue.avg_rating || '-';
+            document.getElementById('avgStars').innerHTML = renderStars(venue.avg_rating || 0);
+            document.getElementById('reviewCount').textContent = `${venue.review_count} review${venue.review_count !== 1 ? 's' : ''}`;
+            
+            document.title = venue.name + ' - Sports Venue Reviews';
+            
+            loadReviews();
+        } catch (error) {
+            console.error('Failed to load venue:', error);
+        }
+    }
+
+    async function loadReviews() {
+        try {
+            const response = await fetch(`/api/reviews?venue_id=${venueId}`);
+            const data = await response.json();
+            displayReviews(data.reviews);
+        } catch (error) {
+            console.error('Failed to load reviews:', error);
+        }
+    }
+
+    function displayReviews(reviews) {
+        const container = document.getElementById('reviewsContainer');
+        
+        if (!reviews || reviews.length === 0) {
+            container.innerHTML = '<div class="no-reviews">No reviews yet. Be the first to review!</div>';
+            return;
+        }
+
+        container.innerHTML = reviews.map(review => `
+            <div class="review-item">
+                <div class="review-header">
+                    <span class="review-user" onclick="window.location.href='/profile/${review.user_id}'">${review.username}</span>
+                    <div class="review-stars">${renderSmallStars(review.rating)}</div>
+                </div>
+                <p class="review-text">${review.text || 'No comment provided.'}</p>
+                <span class="review-timestamp">${formatDate(review.timestamp)}</span>
+                ${currentUser && currentUser.id === review.user_id ? `
+                    <div class="review-actions">
+                        <button class="review-action-btn delete-btn" onclick="deleteReview(${review.id})">Delete</button>
+                    </div>
+                ` : ''}
+            </div>
+        `).join('');
+    }
+
+    function renderStars(rating) {
+        let stars = '';
+        for (let i = 1; i <= 5; i++) {
+            const filled = i <= Math.round(rating) ? 'filled' : '';
+            stars += `<svg class="star ${filled}" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
+        }
+        return stars;
+    }
+
+    function renderSmallStars(rating) {
+        let stars = '';
+        for (let i = 1; i <= 5; i++) {
+            const filled = i <= rating ? 'filled' : '';
+            stars += `<svg class="star ${filled}" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
+        }
+        return stars;
+    }
+
+    function formatDate(timestamp) {
+        const date = new Date(timestamp);
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    }
+
+    function setupStarRating() {
+        const starBtns = document.querySelectorAll('.star-btn');
+        starBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                selectedRating = parseInt(this.dataset.rating);
+                updateStarDisplay();
+            });
+            btn.addEventListener('mouseenter', function() {
+                const hoverRating = parseInt(this.dataset.rating);
+                highlightStars(hoverRating);
+            });
+        });
+
+        document.getElementById('starRating').addEventListener('mouseleave', function() {
+            updateStarDisplay();
+        });
+    }
+
+    function highlightStars(rating) {
+        const starBtns = document.querySelectorAll('.star-btn');
+        starBtns.forEach(btn => {
+            const btnRating = parseInt(btn.dataset.rating);
+            if (btnRating <= rating) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+    }
+
+    function updateStarDisplay() {
+        highlightStars(selectedRating);
+    }
+
+    function showMessage(type, text) {
+        const container = document.getElementById('reviewMessage');
+        container.innerHTML = `<div class="message ${type}-message">${text}</div>`;
+        setTimeout(() => container.innerHTML = '', 5000);
+    }
+
+    async function submitReview() {
+        if (!currentUser) {
+            window.location.href = '/login';
+            return;
+        }
+
+        if (selectedRating < 1 || selectedRating > 5) {
+            showMessage('error', 'Please select a rating (1-5 stars)');
+            return;
+        }
+
+        const text = document.getElementById('reviewText').value.trim();
+        const btn = document.getElementById('submitReviewBtn');
+        btn.disabled = true;
+        btn.textContent = 'Submitting...';
+
+        try {
+            const response = await fetch('/api/reviews/create', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken()
+                },
+                body: JSON.stringify({
+                    venue_id: venueId,
+                    rating: selectedRating,
+                    text: text
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showMessage('success', 'Review submitted successfully!');
+                document.getElementById('reviewText').value = '';
+                selectedRating = 0;
+                updateStarDisplay();
+                loadVenue();
+            } else {
+                showMessage('error', data.error || 'Failed to submit review');
+            }
+        } catch (error) {
+            showMessage('error', 'An error occurred. Please try again.');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Submit Review';
+        }
+    }
+
+    async function deleteReview(reviewId) {
+        if (!confirm('Are you sure you want to delete this review?')) return;
+
+        try {
+            const response = await fetch(`/api/reviews/${reviewId}/delete`, {
+                method: 'DELETE',
+                headers: { 'X-CSRFToken': getCsrfToken() }
+            });
+
+            if (response.ok) {
+                loadVenue();
+            } else {
+                const data = await response.json();
+                alert(data.error || 'Failed to delete review');
+            }
+        } catch (error) {
+            alert('An error occurred. Please try again.');
+        }
+    }
+
+    checkAuth();
+    loadVenue();
+    setupStarRating();
+</script>
+
+</body>
+</html>
